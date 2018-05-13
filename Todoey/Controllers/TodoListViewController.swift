@@ -25,11 +25,6 @@
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        //           print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
-        
-//        loadItems()
-        
     }
     
     //MARK - Tableview Datasource Methods
@@ -60,8 +55,8 @@
     //MARK - TableView Delegate Methods
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        //      print(itemArray[indexPath.row])
+
+        //  EXAMPLE of Removing an Item from the table
         
         //        context.delete(itemArray[indexPath.row])
         //        itemArray.remove(at: indexPath.row)
@@ -127,10 +122,8 @@
         // lesson 260 around 13 mins
         if let additionalPredicate = predicate {
             request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
-            
         } else {
             request.predicate = categoryPredicate
-            
         }
         
         do {
