@@ -4,7 +4,7 @@
  //
  //  Created by Rita Sweet on 1/5/18.
  //  Copyright © 2018 Rita Sweet. All rights reserved.
- //
+ //  RealmSwift now installed
  
  import UIKit
  import CoreData
