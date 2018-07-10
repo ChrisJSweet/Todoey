@@ -8,8 +8,9 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 
-class CategoryViewController: UITableViewController {
+class CategoryViewController: SwipeTableViewController {
     
     let realm = try! Realm()
     
@@ -19,6 +20,10 @@ class CategoryViewController: UITableViewController {
         super.viewDidLoad()
         
         loadCategories()
+        tableView.separatorStyle = .none
+        
+        //        tableView.rowHeight = 80.0
+        
     }
     
     //MARK: - TableView DataSource Methods
@@ -28,21 +33,23 @@ class CategoryViewController: UITableViewController {
         
     }
     
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        // create a reusable cell and add it to the table at the index path
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
-        //        let category = categories[indexPath.row]
-        //
-        //        cell.textLabel?.text = category.name
-        // -or- put another way
-        
-        cell.textLabel?.text = categories?[indexPath.row].name ?? "No Categories added yet"
-        
-        return cell
-        
-    }
+        if let category = categories?[indexPath.row] {
+            
+            cell.textLabel?.text = category.name
+            
+            guard let categoryColour = UIColor(hexString: category.colour) else {fatalError()}
+            
+            cell.backgroundColor = categoryColour
+            cell.textLabel?.textColor = ContrastColorOf(categoryColour, returnFlat: true)
+            
+        }
+        return cell }
+    
     
     //MARK: - TableView Delegate Methods when we click on a cell
     
@@ -88,8 +95,25 @@ class CategoryViewController: UITableViewController {
         tableView.reloadData()
     }
     
-    // End of Main Class
-    //MARK: - Add New Categories - Add button pressed
+    //MARK: - Delete Data From Swipe
+    
+    override func updateModel(at indexPath: IndexPath) {
+        
+        // next line shows how to force the print statement in the super class
+        // super.updateModel(at: indexPath)
+        
+        if let categoryForDeletion = self.categories?[indexPath.row] {
+            do {
+                try self.realm.write {
+                    self.realm.delete(categoryForDeletion)
+                }
+            } catch {
+                print ("Error deleting category, \(error)")
+            }
+        }
+    }
+    
+    //MARK: - Add New Categories - Add button presse
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         
@@ -102,18 +126,23 @@ class CategoryViewController: UITableViewController {
             
             let newCategory = Category()
             newCategory.name = textField.text!
+            newCategory.colour = UIColor.randomFlat.hexValue()
+            
             self.save(category: newCategory)
             
         }
         
         alert.addAction(action)
         
-        alert.addTextField { (alertTextField) in
-            alertTextField.placeholder = "Create new category"
-            textField = alertTextField
+        alert.addTextField { (field) in
+            textField = field
+            textField.placeholder = "Create new category"
+            
         }
         
         present(alert, animated: true, completion: nil)
         
     }
 }
+
+
